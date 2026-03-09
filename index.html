@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VascularAI — Triagem Vascular</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f6f1;--surface:#fff;--s2:#f2efe8;--ink:#1a1410;--muted:#8a7f72;--line:#e5e0d5;
+  --red:#c0392b;--amber:#d4820a;--green:#1a6b4a;--accent:#1a3a5c;--accent2:#2d6a8f;
+  --rs:rgba(192,57,43,0.08);--as:rgba(212,130,10,0.08);--gs:rgba(26,107,74,0.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 5% 0%,rgba(45,106,143,.06) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 95% 100%,rgba(192,57,43,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+/* CONSENT */
+.co{position:fixed;inset:0;z-index:200;background:#f8f6f1;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px;animation:fadeIn .4s both}
+.cb{background:#fff;border:1px solid var(--line);border-radius:22px;max-width:600px;width:100%;padding:34px 34px 26px;box-shadow:0 8px 48px rgba(26,20,16,.1);margin:auto;display:flex;flex-direction:column}
+.clogo{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.clogo-i{width:46px;height:46px;background:var(--accent);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.clogo-t{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--ink)}
+.clogo-t span{font-size:12px;font-weight:400;color:var(--muted);display:block;font-family:'DM Sans',sans-serif}
+.cbadge{display:inline-flex;align-items:center;gap:6px;background:var(--rs);border:1px solid rgba(192,57,43,.2);border-radius:100px;padding:3px 11px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+.ctitle{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:12px}
+.cbody{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px}
+.citems{list-style:none;margin-bottom:18px;display:flex;flex-direction:column;gap:8px}
+.citems li{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink);line-height:1.55;padding:10px 13px;background:var(--s2);border-radius:10px;border-left:3px solid var(--accent)}
+.ccfm{background:rgba(26,58,92,.06);border:1px solid rgba(26,58,92,.15);border-radius:11px;padding:12px 14px;font-size:12px;color:var(--accent);line-height:1.6;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start}
+.cchk{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;cursor:pointer}
+.cchk input{width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;margin-top:2px;cursor:pointer}
+.cchk label{font-size:13px;color:var(--ink);line-height:1.55;cursor:pointer}
+.btnc{width:100%;background:var(--accent);border:none;border-radius:13px;padding:15px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:#fff;cursor:pointer;transition:all .25s;opacity:.4;pointer-events:none;position:sticky;bottom:0}
+.btnc.on{opacity:1;pointer-events:all}
+.btnc.on:hover{background:#142d4a;transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,58,92,.25)}
+.cfoot{text-align:center;margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6}
+@media(max-width:480px){.cb{padding:20px 15px 16px}.co{padding:8px}}
+
+/* LEADS PANEL */
+.loverlay{position:fixed;inset:0;z-index:300;background:rgba(26,20,16,.55);display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.lbox{background:#fff;border-radius:20px;max-width:980px;width:100%;padding:24px;box-shadow:0 16px 64px rgba(26,20,16,.18);margin:auto}
+.lhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.ltitle{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--ink)}
+.lactions{display:flex;gap:7px;flex-wrap:wrap}
+.bex{padding:7px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .2s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px}
+.bxls{background:var(--gs);border-color:rgba(26,107,74,.3);color:var(--green)}
+.bpdf{background:var(--rs);border-color:rgba(192,57,43,.3);color:var(--red)}
+.bclr{background:var(--as);border-color:rgba(212,130,10,.3);color:var(--amber)}
+.bcls{background:transparent;border:1.5px solid var(--line);border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
+.lmeta{font-size:13px;color:var(--muted);margin-bottom:12px}
+.lwrap{overflow-x:auto;border-radius:11px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{background:var(--s2)}
+th{padding:8px 10px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+.gpill{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:700}
+.lempty{text-align:center;padding:36px;color:var(--muted);font-size:14px}
+
+/* PROGRESS + NAV */
+.pstrip{position:fixed;top:0;left:0;right:0;z-index:100;height:3px;background:var(--line)}
+.pfill{height:100%;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.snav{position:fixed;top:3px;left:0;right:0;z-index:99;background:rgba(248,246,241,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;justify-content:center}
+.sdw{display:flex;align-items:center}
+.sn{display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:100px;transition:all .3s}
+.sn.done{background:rgba(26,58,92,.08)}
+.sn.active{background:var(--accent);color:#fff}
+.snum{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1.5px solid currentColor;flex-shrink:0}
+.sn.active .snum{border-color:#fff;background:#fff;color:var(--accent)}
+.sn.done .snum{background:var(--accent);border-color:var(--accent);color:#fff}
+.slbl{font-size:11px;font-weight:600;white-space:nowrap}
+@media(max-width:520px){.slbl{display:none}}
+.sline{width:20px;height:1px;background:var(--line);flex-shrink:0}
+
+/* LAYOUT */
+.wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:88px 18px 80px}
+.cfmbanner{background:rgba(26,58,92,.06);border:1px solid rgba(26,58,92,.15);border-radius:11px;padding:8px 13px;margin-bottom:18px;display:flex;align-items:center;gap:9px;font-size:12px;color:var(--accent)}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:30px;animation:fadeUp .7s both}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border-radius:100px;padding:5px 14px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.pulse{width:6px;height:6px;background:rgba(255,255,255,.7);border-radius:50%;animation:pulse 2s infinite}
+h1{font-family:'Fraunces',serif;font-size:clamp(24px,5vw,42px);font-weight:300;color:var(--ink);line-height:1.1;margin-bottom:9px}
+h1 em{font-style:italic;color:var(--accent2)}
+.hsub{font-size:14px;color:var(--muted);max-width:390px;margin:0 auto;line-height:1.65}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:12px;box-shadow:0 2px 14px rgba(26,20,16,.04)}
+.ctit{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+
+/* DOPPLER OPTIONS */
+.dlist{display:flex;flex-direction:column;gap:8px}
+.dopt{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer;transition:all .2s;background:var(--s2)}
+.dopt:hover{border-color:var(--accent2);background:rgba(45,106,143,.04)}
+.dopt.sel{border-color:var(--accent);background:rgba(26,58,92,.06)}
+.dopt.sel .drad{border-color:var(--accent);background:var(--accent)}
+.dopt.sel .drad::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#fff}
+.drad{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;margin-top:2px;position:relative;transition:all .2s}
+.dt{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.dd{font-size:12px;color:var(--muted);line-height:1.5}
+.dtag{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.tg{background:var(--gs);color:var(--green)}.ta{background:var(--as);color:var(--amber)}
+
+/* UPLOAD */
+.uzone{border:2px dashed var(--line);border-radius:15px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .25s;background:var(--s2)}
+.uzone:hover,.uzone.drag{border-color:var(--accent);background:rgba(26,58,92,.04)}
+.uico{width:50px;height:50px;background:linear-gradient(135deg,rgba(26,58,92,.1),rgba(45,106,143,.1));border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 10px}
+.pimg{width:100%;max-height:320px;object-fit:contain;display:block;border-radius:10px;background:#f2efe8}
+.pbar{display:flex;justify-content:space-between;align-items:center;padding:8px 0 0}
+
+/* BUTTONS */
+.btnp{width:100%;background:var(--accent);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .25s;text-decoration:none}
+.btnp:hover:not(:disabled){background:#142d4a;transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,58,92,.25)}
+.btnp:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btng{background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s}
+.btng:hover{border-color:var(--accent);color:var(--accent)}
+.btno{width:100%;background:transparent;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);cursor:pointer;transition:all .2s;margin-top:8px}
+.btno:hover{border-color:var(--accent);color:var(--accent)}
+
+/* DOCTORALIA BUTTON - destaque visual */
+.btn-doc{width:100%;background:linear-gradient(135deg,#0096cc,#005f99);border:none;border-radius:13px;padding:18px 20px;font-family:'DM Sans',sans-serif;font-size:17px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:11px;text-decoration:none;transition:all .25s;margin-bottom:10px;letter-spacing:.01em}
+.btn-doc:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,95,153,.4);background:linear-gradient(135deg,#00aae0,#0070b0)}
+.btn-doc-sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:16px}
+
+/* WHATSAPP BUTTON */
+.btn-wpp{width:100%;background:#25d366;border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;transition:all .25s}
+.btn-wpp:hover{background:#1db954;transform:translateY(-1px);box-shadow:0 6px 18px rgba(37,211,102,.3)}
+
+/* RESULT */
+.shdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.scirc{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:27px;font-weight:600;flex-shrink:0}
+.sbw{display:flex;align-items:center;gap:8px;padding:10px 13px;background:var(--s2);border-radius:11px;margin-bottom:12px}
+.segs{display:flex;gap:3px;flex:1}
+.seg{flex:1;height:8px;border-radius:4px;background:var(--line);transition:all .3s}
+.sg{background:var(--green)}.sa{background:var(--amber)}.sr{background:var(--red)}
+.cur{height:13px;box-shadow:0 0 7px currentColor}
+.frow{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.frow:last-child{border-bottom:none}
+.titem{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.titem:last-child{border-bottom:none}
+.tico{width:30px;height:30px;border-radius:8px;background:rgba(26,58,92,.08);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.spill{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.pbadge{font-size:10px;font-weight:600;color:var(--muted);margin-left:5px;text-transform:uppercase}
+.al{padding:10px 13px;border-radius:11px;font-size:13px;line-height:1.6;display:flex;gap:9px;align-items:flex-start}
+.alw{background:var(--as);border:1px solid rgba(212,130,10,.2);color:#7a5800}
+.ali{background:rgba(26,58,92,.07);border:1px solid rgba(26,58,92,.15);color:var(--accent)}
+.alr{background:var(--rs);border:1px solid rgba(192,57,43,.2);color:var(--red)}
+.alg{background:var(--gs);border:1px solid rgba(26,107,74,.2);color:var(--green)}
+.urg{border-radius:14px;padding:16px;margin-bottom:12px}
+.ug{background:var(--rs);border:1.5px solid rgba(192,57,43,.2)}
+.um{background:var(--as);border:1.5px solid rgba(212,130,10,.2)}
+.ul{background:var(--gs);border:1.5px solid rgba(26,107,74,.2)}
+.urgt{font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-bottom:4px}
+.urgd{font-size:13px;line-height:1.6;color:var(--muted)}
+
+/* FORM */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:13px}
+@media(max-width:520px){.fgrid{grid-template-columns:1fr}}
+.fc2{grid-column:1/-1}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;background:var(--s2);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s;resize:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.req{color:var(--red)}
+
+/* SPINNER */
+.spin{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.anim{animation:fadeUp .5s both}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- CONSENT -->
+<div id="cOverlay" class="co">
+  <div class="cb">
+    <div class="clogo"><div class="clogo-i">🩺</div><div class="clogo-t">VascularAI<span>Sistema de Triagem por Inteligência Artificial</span></div></div>
+    <div class="cbadge">⚠️ Leia antes de continuar</div>
+    <h2 class="ctitle">Esta ferramenta é um auxílio de triagem — não um diagnóstico médico</h2>
+    <p class="cbody">Antes de usar, é fundamental compreender o que esta ferramenta <strong>faz</strong> e o que ela <strong>não faz</strong>:</p>
+    <ul class="citems">
+      <li><span>🤖</span><span><strong>Ferramenta experimental de IA em fase de teste:</strong> Sugere uma classificação preliminar de varizes. Os resultados são orientativos e sujeitos a erros.</span></li>
+      <li><span>🚫</span><span><strong>Não substitui consulta médica:</strong> O resultado não tem valor clínico definitivo e não deve orientar decisões de tratamento sem avaliação presencial por médico especialista.</span></li>
+      <li><span>📸</span><span><strong>Limitações da análise por foto:</strong> A IA analisa imagens 2D e não consegue palpar veias nem avaliar fluxo venoso. O ultrassom doppler é indispensável para diagnóstico definitivo.</span></li>
+      <li><span>📋</span><span><strong>Finalidade exclusiva:</strong> Orientar o paciente a buscar atendimento especializado e auxiliar na priorização do agendamento.</span></li>
+    </ul>
+    <div class="ccfm"><span style="font-size:17px;flex-shrink:0">⚖️</span><span><strong>Conformidade CFM — Resolução nº 2.314/2022:</strong> Este sistema não emite laudos, receitas ou prescrições. Toda conduta diagnóstica e terapêutica é de responsabilidade exclusiva do médico assistente após avaliação clínica presencial.</span></div>
+    <div class="cchk"><input type="checkbox" id="chk" onchange="toggleC(this)"><label for="chk">Li e compreendi. Estou ciente de que este é um <strong>teste experimental de IA</strong> e que o resultado <strong>não constitui diagnóstico médico</strong>.</label></div>
+    <button class="btnc" id="btnC" onclick="acceptC()">Concordo e quero continuar →</button>
+    <div class="cfoot">Seus dados são usados apenas para fins de agendamento e não são compartilhados com terceiros.</div>
+  </div>
+</div>
+
+
+
+<!-- NAV -->
+<div class="pstrip" id="pStrip" style="display:none"><div class="pfill" id="pFill" style="width:20%"></div></div>
+<div class="snav" id="sNav" style="display:none">
+  <div class="sdw">
+    <div class="sn active" id="sn1"><div class="snum">1</div><span class="slbl">Doppler</span></div>
+    <div class="sline"></div>
+    <div class="sn" id="sn2"><div class="snum">2</div><span class="slbl">Foto</span></div>
+    <div class="sline"></div>
+    <div class="sn" id="sn3"><div class="snum">3</div><span class="slbl">Resultado</span></div>
+    <div class="sline"></div>
+    <div class="sn" id="sn4"><div class="snum">4</div><span class="slbl">Dados</span></div>
+    <div class="sline"></div>
+    <div class="sn" id="sn5"><div class="snum">5</div><span class="slbl">Agendamento</span></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- CFM BANNER -->
+  <div class="cfmbanner">
+    <span style="font-size:14px;flex-shrink:0">🤖</span>
+    <span><strong>Ferramenta experimental de IA</strong> — Não emite diagnóstico médico · Resolução CFM nº 2.314/2022</span>
+
+  </div>
+
+  <!-- STEP 1: DOPPLER -->
+  <div id="step1">
+    <div class="hero">
+      <div class="eyebrow"><span class="pulse"></span> Triagem Vascular Inteligente</div>
+      <h1>Antes da foto,<br>uma <em>pergunta importante</em></h1>
+      <p class="hsub">O resultado do doppler nos permite classificar suas varizes com muito mais precisão.</p>
+    </div>
+    <div class="card anim">
+      <div class="ctit">🔊 Você já realizou ultrassom doppler venoso dos membros inferiores?</div>
+      <div class="dlist">
+        <div class="dopt" id="dp_pos" onclick="selDop('pos')"><div class="drad"></div><div><div class="dt">✅ Sim — com refluxo venoso confirmado no laudo</div><div class="dd">O laudo identificou refluxo venoso patológico na safena ou em veias perfurantes.</div><span class="dtag tg">Doppler positivo</span></div></div>
+        <div class="dopt" id="dp_neg" onclick="selDop('neg')"><div class="drad"></div><div><div class="dt">✅ Sim — sem refluxo patológico identificado</div><div class="dd">O doppler foi realizado e não identificou refluxo venoso significativo.</div><span class="dtag tg">Doppler negativo</span></div></div>
+        <div class="dopt" id="dp_no" onclick="selDop('no')"><div class="drad"></div><div><div class="dt">❌ Não realizei doppler ainda</div><div class="dd">A IA classificará pelas características visuais com confiança reduzida.</div><span class="dtag ta">Classificação por imagem</span></div></div>
+      </div>
+    </div>
+    <button class="btnp" id="btnDopNext" disabled onclick="goTo(2)">Enviar foto das varizes →</button>
+  </div>
+
+  <!-- STEP 2: FOTO -->
+  <div id="step2" class="hidden">
+    <div class="hero" style="margin-bottom:24px">
+      <h1 style="font-size:clamp(22px,4vw,37px)">Agora envie a<br><em>foto das varizes</em></h1>
+      <p class="hsub">Fotografe a perna em pé, com boa iluminação e pele visível.</p>
+    </div>
+    <div id="dopBanner" class="al ali anim" style="margin-bottom:12px"></div>
+    <div class="card anim">
+      <div class="ctit">📷 Foto da Perna</div>
+      <div class="uzone" id="uZone">
+        <input type="file" id="fInput" accept="image/*" style="display:none">
+        <div class="uico">📸</div>
+        <div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px">Arraste ou toque para enviar</div>
+        <div style="font-size:13px;color:var(--muted)">JPG, PNG, WEBP — Máximo 10MB</div>
+      </div>
+      <div id="prevArea" class="hidden">
+        <img id="prevImg" class="pimg" src="" alt="">
+        <div class="pbar"><span style="font-size:13px;color:var(--muted)">✅ Foto selecionada</span><button class="btng" onclick="resetUp()">🗑 Remover</button></div>
+      </div>
+    </div>
+    <button class="btnp" id="btnAn" disabled onclick="runAI()">🔬 Analisar Varizes</button>
+    <div id="loadBlock" class="hidden" style="text-align:center;padding:36px 0">
+      <div class="spin"></div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:12px">Analisando sua foto...</div>
+      <div id="loadSteps" style="display:flex;flex-direction:column;gap:7px;align-items:center"></div>
+    </div>
+    <button class="btno" onclick="goTo(1)">← Voltar</button>
+  </div>
+
+  <!-- STEP 3: RESULTADO -->
+  <div id="step3" class="hidden">
+    <div class="card anim" id="resCard"></div>
+    <div id="urgBlock" class="urg anim hidden"></div>
+    <button class="btnp" onclick="goTo(4)" style="margin-bottom:0">📋 Continuar para Agendamento →</button>
+    <button class="btno" onclick="resetAll()">↩ Refazer Análise</button>
+  </div>
+
+  <!-- STEP 4: DADOS -->
+  <div id="step4" class="hidden">
+    <div class="hero" style="margin-bottom:20px">
+      <h1 style="font-size:clamp(21px,4vw,34px)">Seus <em>dados</em><br>para contato</h1>
+      <p class="hsub">Deixe seus dados para acompanhamento. Ou pule direto para o agendamento.</p>
+    </div>
+    <div class="card anim">
+      <div class="ctit">👤 Dados Pessoais</div>
+      <div class="fgrid">
+        <div class="field fc2"><label>Nome completo <span class="req">*</span></label><input type="text" id="fn" placeholder="Ex: Maria Silva"></div>
+        <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="fw" placeholder="(85) 99999-9999" oninput="mPhone(this)"></div>
+        <div class="field"><label>E-mail</label><input type="email" id="fe" placeholder="seu@email.com"></div>
+        <div class="field"><label>Data de nascimento</label><input type="date" id="fnas"></div>
+        <div class="field"><label>Cidade <span class="req">*</span></label><input type="text" id="fc" placeholder="Ex: Fortaleza"></div>
+        <div class="field"><label>Convênio / Plano</label>
+          <select id="fconv"><option value="">Selecione...</option><option>Particular</option><option>Unimed</option><option>Bradesco Saúde</option><option>Amil</option><option>SulAmérica</option><option>Hapvida</option><option>Outro</option></select></div>
+        <div class="field"><label>Como nos conheceu?</label>
+          <select id="forig"><option value="">Selecione...</option><option>Instagram</option><option>Google</option><option>Indicação de amigo</option><option>WhatsApp</option><option>Outro</option></select></div>
+        <div class="field fc2"><label>Principais sintomas</label><textarea id="fsint" rows="2" placeholder="Ex: dor, inchaço, cãibras, cansaço nas pernas..."></textarea></div>
+      </div>
+    </div>
+    <button class="btnp" onclick="saveLead()">💾 Salvar dados e ir para Agendamento →</button>
+    <button class="btno" onclick="goTo(5)" style="color:var(--accent2);border-color:rgba(26,58,92,.2);font-size:13px">Pular cadastro → ir direto ao agendamento</button>
+    <button class="btno" onclick="goTo(3)">← Voltar ao Resultado</button>
+  </div>
+
+  <!-- STEP 5: AGENDAMENTO -->
+  <div id="step5" class="hidden">
+    <div class="hero" style="margin-bottom:24px">
+      <h1 style="font-size:clamp(22px,4vw,38px)">Agendar sua<br><em>consulta</em></h1>
+      <p class="hsub">Acesse nossa agenda online ou entre em contato pelo WhatsApp.</p>
+    </div>
+
+    <!-- Protocolo banner -->
+    <div id="protBanner" class="al ali anim" style="margin-bottom:16px"></div>
+
+    <!-- DOCTORALIA CARD -->
+    <div class="card anim">
+      <div class="ctit">🏥 Agendar pelo Doctoralia</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:18px">
+        Nossa agenda está integrada ao <strong>Doctoralia</strong> — plataforma médica com horários em tempo real, confirmação automática e lembretes.
+      </p>
+
+      <!-- Info box clínica -->
+      <div style="background:linear-gradient(135deg,rgba(0,150,204,.06),rgba(0,102,153,.08));border:1px solid rgba(0,102,153,.15);border-radius:13px;padding:15px 16px;margin-bottom:18px;display:flex;align-items:center;gap:13px">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#0096cc,#005f99);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0">🏥</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:3px">Dr. André Farias — Cirurgia Vascular</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">Consulta presencial e teleconsulta disponíveis · Confirmação imediata · Sem taxa de agendamento</div>
+        </div>
+      </div>
+
+      <!-- BOTÃO PRINCIPAL DOCTORALIA -->
+      <a href="https://www.doctoralia.com.br/z/xvyjVX" target="_blank" rel="noopener" class="btn-doc">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+        Ver horários disponíveis no Doctoralia
+      </a>
+      <div class="btn-doc-sub">Você será direcionado para nossa agenda online com horários em tempo real</div>
+
+      <div class="al ali">💡 <span>No Doctoralia você pode escolher o horário, confirmar a consulta e receber lembretes automáticos pelo WhatsApp ou e-mail.</span></div>
+    </div>
+
+    <!-- WHATSAPP CARD -->
+    <div class="card anim" style="animation-delay:.1s">
+      <div class="ctit">💬 Prefere o WhatsApp?</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:14px">Nossa equipe pode ajudá-lo diretamente pelo WhatsApp, com sua triagem já anexada à mensagem.</p>
+      <a id="wppLink" href="#" target="_blank" rel="noopener" class="btn-wpp">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Solicitar agendamento pelo WhatsApp
+      </a>
+    </div>
+
+    <div class="al alw anim" style="margin-bottom:13px">⚠️ <span>Triagem por IA experimental — não substitui avaliação médica presencial. Diagnóstico e tratamento devem ser definidos por cirurgião vascular ou flebologista. CFM nº 2.314/2022.</span></div>
+    <button class="btno" onclick="goTo(4)">← Voltar</button>
+    <button class="btno" onclick="resetAll()" style="margin-top:8px">🔄 Nova Triagem</button>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ══ CONFIG ══
+const WPP = '5585987253892';
+const SB_URL = 'https://odkcrqpabtfnmjikumrq.supabase.co';
+const SB_KEY = 'sb_publishable_KcugSs0G9eqH22pLWVXhQA_6BBrxUuU';
+
+// ══ STATE ══
+let dop=null, b64=null, mime=null, res=null;
+
+// ══ TRATAMENTOS ══
+const TX={
+  "1-3":{lbl:"Leve",col:"var(--green)",bg:"var(--gs)",bd:"rgba(26,107,74,.25)",
+    tag:"Tratamento Clínico / Escleroterapia",urg:"Eletivo",ucls:"ul",
+    ut:"✅ Grau Leve — Consulta Eletiva",
+    ud:"Presença de telangiectasias e/ou veias reticulares sem varizes tronculares. Tratamento conservador com excelentes resultados.",
+    items:[{i:"💉",n:"Escleroterapia Líquida",d:"Solução esclerosante nas telangiectasias e vasinhos.",p:"Primeira linha"},{i:"🔴",n:"Laser Transdérmico",d:"Laser externo para vasos intradérmicos < 1mm.",p:"Primeira linha"},{i:"🧦",n:"Tratamento Clínico",d:"Meias de compressão e flebotônicos.",p:"Complementar"}]},
+  "4-6":{lbl:"Moderado",col:"var(--amber)",bg:"var(--as)",bd:"rgba(212,130,10,.25)",
+    tag:"Intervenção Minimamente Invasiva",urg:"Prioritário",ucls:"um",
+    ut:"🟡 Grau Moderado — Agende nos Próximos 30 dias",
+    ud:"Varizes tronculares sem refluxo safena confirmado. Tratamento minimamente invasivo tem alta taxa de sucesso.",
+    items:[{i:"💨",n:"Escleroterapia com Espuma",d:"Espuma esclerosante guiada por ultrassom.",p:"Primeira linha"},{i:"🔦",n:"Laser Transdérmico",d:"Para telangiectasias e veias reticulares.",p:"Primeira linha"},{i:"✂️",n:"Flebectomia Ambulatorial",d:"Minirretirada por micropunções, sem internação.",p:"Segunda linha"}]},
+  "7-9":{lbl:"Grave",col:"var(--red)",bg:"var(--rs)",bd:"rgba(192,57,43,.25)",
+    tag:"Procedimento Cirúrgico",urg:"Urgente",ucls:"ug",
+    ut:"🔴 Grau Grave — Consulte um Cirurgião em Breve",
+    ud:"Varizes tronculares com refluxo venoso patológico. Fundamental para prevenir trombose e úlceras venosas.",
+    items:[{i:"🏥",n:"Cirurgia Convencional (Safenectomia)",d:"Retirada da veia safena com refluxo confirmado.",p:"Primeira linha"},{i:"⚡",n:"Laser Endovenoso (EVLA)",d:"Ablação térmica via cateter intraluminal.",p:"Primeira linha"},{i:"📡",n:"Radiofrequência (RFA)",d:"Fechamento por radiofrequência via cateter.",p:"Primeira linha"},{i:"💉",n:"Escleroterapia Complementar",d:"Para telangiectasias residuais após tratamento principal.",p:"Complementar"}]},
+};
+
+const LSTEPS=["🔍 Identificando telangiectasias e veias reticulares...","📐 Avaliando calibre e relevo cutâneo...","🩺 Aplicando protocolo clínico de classificação...","🔊 Cruzando com dados do doppler informados...","📋 Gerando recomendações personalizadas..."];
+
+// ══ LEADS ══
+function gLeads(){try{return JSON.parse(localStorage.getItem('vai_leads')||'[]')}catch{return[]}}
+function sLeads(d){try{localStorage.setItem('vai_leads',JSON.stringify(d))}catch(e){}}
+
+function openLeads(){renderLT();document.getElementById('lOverlay').classList.remove('hidden')}
+function closeLeads(){document.getElementById('lOverlay').classList.add('hidden')}
+
+function renderLT(){
+  const leads=gLeads();
+  document.getElementById('lMeta').textContent=`Total: ${leads.length} lead${leads.length!==1?'s':''} cadastrado${leads.length!==1?'s':''}`;
+  const c=document.getElementById('lTable');
+  if(!leads.length){c.innerHTML='<div class="lempty">📭 Nenhum lead cadastrado ainda.</div>';return;}
+  const rng=g=>g<=3?'1-3':g<=6?'4-6':'7-9';
+  let h=`<table><thead><tr><th>Data</th><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Cidade</th><th>Convênio</th><th>Grau IA</th><th>Protocolo</th><th>Doppler</th><th>Confiança</th><th>Sintomas</th><th>Origem</th></tr></thead><tbody>`;
+  leads.slice().reverse().forEach(l=>{
+    const r=rng(l.g);const info=TX[r];
+    const colMap={'1-3':'var(--green)','4-6':'var(--amber)','7-9':'var(--red)'};
+    const bgMap={'1-3':'var(--gs)','4-6':'var(--as)','7-9':'var(--rs)'};
+    h+=`<tr><td style="white-space:nowrap;font-size:11px">${l.dt||'—'}</td><td style="white-space:nowrap"><strong>${l.nm||'—'}</strong></td><td style="white-space:nowrap">${l.wp||'—'}</td><td>${l.em||'—'}</td><td>${l.ci||'—'}</td><td>${l.cv||'—'}</td>
+    <td><span class="gpill" style="background:${bgMap[r]};color:${colMap[r]};border:1px solid ${info.bd}">Grau ${l.g}/9 — ${info.lbl}</span></td>
+    <td style="font-size:11px">${info.tag}</td><td style="font-size:11px">${l.dp||'—'}</td><td style="font-size:11px">${l.cf||'—'}%</td><td style="font-size:11px;max-width:150px">${l.si||'—'}</td><td>${l.or||'—'}</td></tr>`;
+  });
+  c.innerHTML=h+'</tbody></table>';
+}
+
+function clearLeads(){
+  const leads=gLeads();
+  if(!leads.length){alert('Nenhum lead para apagar.');return;}
+  if(!confirm(`Apagar ${leads.length} lead(s)? Não pode ser desfeito.`))return;
+  sLeads([]);renderLT();
+}
+
+function exportXLS(){
+  const leads=gLeads();
+  if(!leads.length){alert('Nenhum lead para exportar.');return;}
+  const rng=g=>g<=3?'1-3':g<=6?'4-6':'7-9';
+  const rows=leads.map(l=>({'Data':l.dt||'','Nome':l.nm||'','WhatsApp':l.wp||'','E-mail':l.em||'','Cidade':l.ci||'','Convênio':l.cv||'','Grau IA':`Grau ${l.g}/9 — ${TX[rng(l.g)].lbl}`,'Protocolo':TX[rng(l.g)].tag,'Doppler':l.dp||'','Confiança IA':`${l.cf||0}%`,'Sintomas':l.si||'','Como conheceu':l.or||''}));
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Leads VascularAI');
+  XLSX.writeFile(wb,`VascularAI_Leads_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+function exportPDF(){
+  const leads=gLeads();
+  if(!leads.length){alert('Nenhum lead para exportar.');return;}
+  const rng=g=>g<=3?'1-3':g<=6?'4-6':'7-9';
+  const w=window.open('','_blank');
+  const rows=leads.slice().reverse().map((l,i)=>`<tr style="background:${i%2===0?'#f9f9f9':'#fff'}"><td>${l.dt||'—'}</td><td><strong>${l.nm||'—'}</strong></td><td>${l.wp||'—'}</td><td>${l.em||'—'}</td><td>${l.ci||'—'}</td><td style="font-weight:700">Grau ${l.g}/9 — ${TX[rng(l.g)].lbl}</td><td>${TX[rng(l.g)].tag}</td><td>${l.dp||'—'}</td><td>${l.cf||'—'}%</td><td>${l.si||'—'}</td></tr>`).join('');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VascularAI Leads</title><style>body{font-family:Arial,sans-serif;padding:20px;color:#1a1410}h1{font-size:20px;margin-bottom:4px}.sub{font-size:13px;color:#8a7f72;margin-bottom:20px}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#1a3a5c;color:#fff;padding:8px 10px;text-align:left;font-size:11px}td{padding:7px 10px;border-bottom:1px solid #e5e0d5}.ft{margin-top:18px;font-size:11px;color:#8a7f72}@media print{body{padding:10px}}</style></head><body><h1>📊 VascularAI — Banco de Leads</h1><div class="sub">Exportado em ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})} · Total: ${leads.length} lead(s)</div><table><thead><tr><th>Data</th><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Cidade</th><th>Grau IA</th><th>Protocolo</th><th>Doppler</th><th>Confiança</th><th>Sintomas</th></tr></thead><tbody>${rows}</tbody></table><div class="ft">⚠️ Triagem por IA experimental — Resolução CFM nº 2.314/2022. Não substitui avaliação médica presencial.</div></body></html>`);
+  w.document.close();setTimeout(()=>w.print(),500);
+}
+
+// ══ CONSENT ══
+function toggleC(cb){document.getElementById('btnC').classList.toggle('on',cb.checked)}
+function acceptC(){
+  if(!document.getElementById('chk').checked)return;
+  const o=document.getElementById('cOverlay');
+  o.style.animation='fadeOut .35s forwards';
+  setTimeout(()=>{o.style.display='none';document.getElementById('pStrip').style.display='block';document.getElementById('sNav').style.display='flex';},340);
+}
+
+// ══ DOPPLER ══
+function selDop(v){
+  dop=v;
+  ['pos','neg','no'].forEach(x=>document.getElementById('dp_'+x).classList.toggle('sel',x===v));
+  document.getElementById('btnDopNext').disabled=false;
+}
+
+// ══ UPLOAD ══
+const fInput=document.getElementById('fInput');
+const uZone=document.getElementById('uZone');
+uZone.addEventListener('click',()=>fInput.click());
+uZone.addEventListener('dragover',e=>{e.preventDefault();uZone.classList.add('drag')});
+uZone.addEventListener('dragleave',()=>uZone.classList.remove('drag'));
+uZone.addEventListener('drop',e=>{e.preventDefault();uZone.classList.remove('drag');if(e.dataTransfer.files[0])loadF(e.dataTransfer.files[0])});
+fInput.addEventListener('change',e=>{if(e.target.files[0])loadF(e.target.files[0])});
+
+function loadF(file){
+  // Preview
+  const objUrl=URL.createObjectURL(file);
+  const prevImg=document.getElementById('prevImg');
+  prevImg.src=objUrl;
+  uZone.classList.add('hidden');
+  document.getElementById('prevArea').classList.remove('hidden');
+  document.getElementById('btnAn').disabled=true; // desabilitado até processar
+
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const original=ev.target.result;
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const MAX=1400;
+        const nw=img.naturalWidth||img.width;
+        const nh=img.naturalHeight||img.height;
+        if(!nw||!nh){throw new Error('dimensões inválidas');}
+        const ratio=Math.min(MAX/nw,MAX/nh,1);
+        const w=Math.round(nw*ratio);
+        const h=Math.round(nh*ratio);
+        const canvas=document.createElement('canvas');
+        canvas.width=w;
+        canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        const data=canvas.toDataURL('image/jpeg',0.92);
+        b64=data.split(',')[1];
+        mime='image/jpeg';
+      }catch(e){
+        // fallback: envia original sem redimensionar
+        b64=original.split(',')[1];
+        mime=file.type||'image/jpeg';
+      }
+      document.getElementById('btnAn').disabled=false; // libera só após processar
+    };
+    img.onerror=()=>{
+      b64=original.split(',')[1];
+      mime=file.type||'image/jpeg';
+      document.getElementById('btnAn').disabled=false;
+    };
+    img.src=original;
+  };
+  reader.onerror=()=>{
+    alert('Erro ao ler o arquivo. Tente novamente.');
+    resetUp();
+  };
+  reader.readAsDataURL(file);
+}
+function resetUp(){
+  fInput.value='';b64=null;document.getElementById('prevImg').src='';
+  uZone.classList.remove('hidden');document.getElementById('prevArea').classList.add('hidden');
+  document.getElementById('btnAn').disabled=true;
+}
+
+// ══ AI ANALYSIS ══
+async function runAI(){
+  if(!b64){alert('Aguarde a foto carregar completamente.');return;}
+  document.getElementById('btnAn').classList.add('hidden');
+  document.getElementById('loadBlock').classList.remove('hidden');
+  const el=document.getElementById('loadSteps');el.innerHTML='';
+  for(let i=0;i<LSTEPS.length;i++){
+    await sleep(650);const d=document.createElement('div');
+    d.style.cssText=`font-size:13px;color:${i===LSTEPS.length-1?'var(--accent)':'var(--muted)'};animation:fadeIn .4s both`;
+    d.textContent=LSTEPS[i];el.appendChild(d);
+  }
+  let dctx='';
+  if(dop==='pos'){
+    dctx=`INSTRUÇÃO CRÍTICA — DOPPLER POSITIVO: Paciente confirmou refluxo venoso patológico. Classifique OBRIGATORIAMENTE grau 7, 8 ou 9. NUNCA abaixo de 7. reflux=true. confidence 75-95.`;
+  }else if(dop==='neg'){
+    dctx=`INSTRUÇÃO CRÍTICA — DOPPLER NEGATIVO: Sem refluxo confirmado. Classificação MÁXIMA grau 6. NUNCA 7, 8 ou 9. reflux=false. confidence 55-75.`;
+  }else{
+    dctx=`SEM DOPPLER: Classifique pelas características visuais. Varizes com relevo físico elevado E calibre aparente >5mm → obrigatoriamente grau 7-9 (highRelief=true, grossCaliberElevated=true). Peso extra se face medial da perna. Sem essas características → grau 1-6. needsDoppler=true. confidence 35-60.`;
+  }
+  const sys=`Você é especialista sênior em cirurgia vascular do Dr. André Farias. ${dctx}
+
+VERIFICAÇÃO DE SEGURANÇA OBRIGATÓRIA — analise ANTES de classificar:
+1. A imagem mostra partes íntimas ou genitais? → {"isValid":false,"reason":"intimate","mainFindings":"A foto enviada contém partes íntimas. Por favor envie uma foto da perna (da coxa ao pé), com pele visível e boa iluminação."}
+2. A imagem NÃO é de uma perna humana (rosto, objeto, animal, documento, etc.)? → {"isValid":false,"reason":"wrong_body_part","mainFindings":"A foto enviada não parece ser de uma perna. Por favor envie uma foto da perna com as varizes visíveis."}
+3. A imagem é muito escura, desfocada ou ilegível para análise vascular? → {"isValid":false,"reason":"poor_quality","mainFindings":"A foto está com qualidade insuficiente para análise. Tire uma nova foto com boa iluminação, em pé, com a perna totalmente visível."}
+Somente se passar nas 3 verificações, prossiga com a classificação.
+
+NOMENCLATURA OBRIGATÓRIA:
+- TELANGIECTASIAS: veias intradérmicas <1mm, avermelhadas/arroxeadas, sem relevo.
+- VEIAS RETICULARES (feeder veins): subdérmicas 1-3mm, azuladas/esverdeadas, SEM protuberância.
+- VARIZES TRONCULARES: veias ≥3mm azuis/verdes. NÃO exigem relevo para graus 4-6. Exigem relevo+calibre>5mm para graus 7-9 sem doppler.
+
+ESCALA CLÍNICA:
+· Grau 1: Sem alterações vasculares visíveis.
+· Grau 2: Apenas telangiectasias <1mm. Sem reticulares, sem tronculares.
+· Grau 3: Telangiectasias + reticulares 1-3mm sem relevo. Sem tronculares.
+· Grau 4: Tronculares ≥3mm visíveis (azul/verde), SEM relevo cutâneo, sem refluxo, SEM telangiectasias.
+· Grau 5: Telangiectasias + tronculares ≥3mm. Sem refluxo. Sem convergência direta.
+· Grau 6: Telangiectasias + tronculares que CONVERGEM DIRETAMENTE para as telangiectasias (padrão árvore→galhos). Sem refluxo.
+· Grau 7: Tronculares + refluxo confirmado. Sem telangiectasias predominantes.
+· Grau 8: Telangiectasias + tronculares + refluxo.
+· Grau 9: Telangiectasias + reticulares + tronculares + refluxo. Quadro completo.
+
+REGRA SEM DOPPLER — grosso calibre: relevo físico evidente + calibre >5mm → obrigatoriamente grau 7-9. Marque highRelief=true e grossCaliberElevated=true. Peso extra se face medial.
+
+Responda SOMENTE JSON sem markdown:
+{"isValid":true,"score":4,"range":"4-6","mainFindings":"descrição clínica 2-3 frases","doubts":"","telangiectasias":false,"feederVeins":false,"truncalVarices":true,"highRelief":false,"grossCaliberElevated":false,"medialLocation":false,"reflux":false,"needsDoppler":false,"confidence":68}
+Foto inválida: {"isValid":false,"reason":"tipo","mainFindings":"mensagem clara orientando o paciente"}`;
+
+  let raw='';
+  try{
+    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,system:sys,
+        messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mime,data:b64}},{type:'text',text:'Analise esta foto e classifique conforme a escala clínica revisada.'}]}]})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(`API ${r.status}: ${e?.error?.message||r.statusText}`)}
+    const data=await r.json();
+    raw=data.content?.map(c=>c.text||'').join('')||'';
+    const m=raw.match(/\{[\s\S]*\}/);if(!m)throw new Error('JSON não encontrado');
+    res=JSON.parse(m[0]);
+    if(res.isValid){
+      // Doppler positivo → mínimo grau 7
+      if(dop==='pos'&&res.score<7){res.score=7;res.range='7-9';res.reflux=true;res.doubts='[Reclassificado: doppler confirmou refluxo → grau mínimo 7.]'}
+      // Doppler negativo → máximo grau 6
+      if(dop==='neg'&&res.score>6){res.score=6;res.range='4-6';res.reflux=false;res.doubts='[Limitado ao grau 6: doppler negativo excluiu refluxo safena.]';if(res.confidence>70)res.confidence=65}
+      // Sem doppler + relevo elevado + grosso calibre → obrigatoriamente 7+
+      if(dop==='no'&&(res.grossCaliberElevated||res.highRelief)&&res.score<7){
+        res.score=7;res.range='7-9';
+        const loc=res.medialLocation?' Localização em face medial (trajeto safena magna) reforça suspeita.':'';
+        res.doubts=(res.doubts||'')+` [Varizes com relevo elevado e grosso calibre detectadas → grau mínimo 7. Doppler obrigatório.${loc}]`;
+        if(res.confidence>55)res.confidence=52;
+      }
+    }
+  }catch(e){
+    console.error(e,'raw:',raw);
+    res={isValid:false,mainFindings:`Não foi possível analisar. ${e.message.includes('API')?'Erro de conexão.':'Tente com foto mais nítida da perna.'}`};
+  }
+  document.getElementById('loadBlock').classList.add('hidden');
+  document.getElementById('btnAn').classList.remove('hidden');
+  document.getElementById('btnAn').disabled=false;
+  renderRes();goTo(3);
+}
+
+// ══ RENDER RESULT ══
+function renderRes(){
+  const card=document.getElementById('resCard');
+  const urgB=document.getElementById('urgBlock');
+  if(!res||!res.isValid){
+    const rm={intimate:{icon:'🚫',title:'Foto não compatível',color:'var(--red)'},wrong_body_part:{icon:'📸',title:'Foto incorreta — não é uma perna',color:'var(--amber)'},poor_quality:{icon:'🔆',title:'Qualidade insuficiente',color:'var(--amber)'}}[res?.reason]||{icon:'⚠️',title:'Não foi possível classificar',color:'var(--amber)'};
+    card.innerHTML=`<div style="text-align:center;padding:18px 0 12px"><div style="font-size:46px;margin-bottom:12px">${rm.icon}</div><div style="font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:${rm.color};margin-bottom:10px">${rm.title}</div><div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto">${res?.mainFindings||'Envie uma foto da perna com boa iluminação.'}</div><button class="btnp" onclick="goTo(2);resetUp()" style="max-width:260px;margin:0 auto">📷 Enviar nova foto</button></div>`;
+    urgB.classList.add('hidden');return;
+  }
+  const info=TX[res.range]||TX['4-6'];
+  const conf=res.confidence||50;
+  const cc=conf>=70?'var(--green)':conf>=50?'var(--amber)':'var(--red)';
+  const cl=conf>=70?'Alta confiança':conf>=50?'Confiança moderada':'Baixa confiança — veja observações';
+  const hd=res.doubts&&res.doubts.trim().length>0;
+  let dbadge='';
+  if(dop==='pos'){dbadge=`<div class="al alr" style="margin-bottom:11px">🔊 <span><strong>Doppler positivo — Refluxo venoso confirmado.</strong> Classificação mínima: Grau 7.</span></div>`}
+  else if(dop==='neg'){dbadge=`<div class="al alg" style="margin-bottom:11px">🔊 <span><strong>Doppler negativo — Sem refluxo.</strong> Classificação máxima: Grau 6.</span></div>`}
+  else{dbadge=`<div class="al alw" style="margin-bottom:11px">🔊 <span><strong>Doppler não realizado.</strong> Classificação por análise visual com confiança reduzida.</span></div>`}
+  let bars='';for(let i=1;i<=9;i++){const c=i<=3?'sg':i<=6?'sa':'sr';bars+=`<div class="seg ${i<=res.score?c:''} ${i===res.score?'cur':''}" title="Grau ${i}"></div>`}
+  const finds=[['🔴','Telangiectasias — veias intradérmicas < 1mm',res.telangiectasias],['🟡','Veias reticulares / feeder veins — 1–3mm, sem relevo',res.feederVeins],['🔵','Varizes tronculares — ≥ 3mm visíveis',res.truncalVarices],['📐','Relevo físico elevado na superfície cutânea',res.highRelief],['📏','Grosso calibre aparente > 5mm',res.grossCaliberElevated],['📍','Localização em face medial (trajeto safena magna)',res.medialLocation],['⚡','Refluxo venoso safena/perfurantes',res.reflux]].filter(([,,v])=>v===true);
+  card.innerHTML=`${dbadge}
+    <div class="shdr">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div class="scirc" style="background:${info.bg};border:2px solid ${info.col}">${res.score}</div>
+        <div><div style="font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--ink);margin-bottom:2px">${info.lbl}</div><div style="font-size:12px;color:var(--muted)">Grau ${res.score} de 9 · Faixa ${res.range}</div></div>
+      </div>
+      <div style="text-align:right"><div class="spill" style="background:${info.bg};border:1px solid ${info.bd};color:${info.col};margin-bottom:5px">${info.urg}</div><div style="font-size:11px;font-weight:700;color:${cc}">${conf}% — ${cl}</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:11px;color:var(--muted);width:60px;flex-shrink:0">Confiança</span><div style="flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden"><div style="width:${conf}%;height:100%;background:${cc};border-radius:3px"></div></div><span style="font-size:11px;color:${cc};font-weight:700;width:28px;text-align:right">${conf}%</span></div>
+    <div class="sbw" style="margin-bottom:12px"><span style="font-size:11px;color:var(--muted);width:44px;flex-shrink:0">Grau ${res.score}/9</span><div class="segs">${bars}</div><span style="font-size:11px;color:var(--muted);width:48px;text-align:right;flex-shrink:0">${info.lbl}</span></div>
+    ${hd?`<div style="background:var(--as);border:1.5px solid rgba(212,130,10,.25);border-radius:10px;padding:10px 13px;margin-bottom:11px;display:flex;gap:8px"><span>⚠️</span><div><div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:2px">Dúvida diagnóstica registrada</div><div style="font-size:13px;color:var(--muted);line-height:1.55">${res.doubts}</div></div></div>`:''}
+    <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:7px">📋 Achados Clínicos</div>
+    <p style="font-size:14px;line-height:1.7;color:var(--muted);margin-bottom:10px">${res.mainFindings}</p>
+    ${finds.length?finds.map(([ic,lb])=>`<div class="frow"><span>${ic}</span><span style="flex:1">${lb}</span><span style="font-weight:700;font-size:11px;color:var(--green)">✓</span></div>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:5px 0">Nenhum achado patológico identificado.</p>'}
+    <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px">💊 Tratamentos Indicados — Graus ${res.range}</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Protocolo: <strong style="color:${info.col}">${info.tag}</strong></div>
+    ${info.items.map(t=>`<div class="titem"><div class="tico">${t.i}</div><div><div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px">${t.n}<span class="pbadge">${t.p}</span></div><div style="font-size:13px;color:var(--muted);line-height:1.5">${t.d}</div></div></div>`).join('')}
+    <div class="al alw" style="margin-top:12px">⚠️ <span>Triagem por IA experimental — não substitui avaliação médica presencial. CFM nº 2.314/2022.</span></div>`;
+  urgB.className=`urg ${info.ucls} anim`;urgB.classList.remove('hidden');
+  urgB.innerHTML=`<div class="urgt">${info.ut}</div><div class="urgd">${info.ud}</div>`;
+}
+
+// ══ NAVIGATION ══
+function goTo(n){
+  [1,2,3,4,5].forEach(i=>{
+    document.getElementById('step'+i).classList.toggle('hidden',i!==n);
+    const sn=document.getElementById('sn'+i);sn.classList.remove('active','done');
+    if(i===n)sn.classList.add('active');else if(i<n)sn.classList.add('done');
+  });
+  document.getElementById('pFill').style.width=[20,40,60,80,100][n-1]+'%';
+  if(n===2){
+    const b=document.getElementById('dopBanner');
+    if(dop==='pos'){b.className='al alr anim';b.innerHTML=`🔊 <span><strong>Doppler positivo</strong> — Refluxo venoso confirmado. Classificação mínima: Grau 7.</span>`}
+    else if(dop==='neg'){b.className='al alg anim';b.innerHTML=`🔊 <span><strong>Doppler negativo</strong> — Sem refluxo. Classificação máxima: Grau 6.</span>`}
+    else{b.className='al alw anim';b.innerHTML=`🔊 <span><strong>Sem doppler</strong> — Classificação pelas características visuais com confiança reduzida.</span>`}
+  }
+  if(n===5){
+    const info=res?.range?TX[res.range]:null;
+    if(info){document.getElementById('protBanner').innerHTML=`🩺 <span>Protocolo indicado: <strong>${info.tag}</strong> · Grau ${res.score}/9 — ${info.lbl} · Urgência: <strong>${info.urg}</strong></span>`}
+    const ds=dop==='pos'?'Positivo — Refluxo confirmado':dop==='neg'?'Negativo — Sem refluxo':'Não realizado';
+    const nome=document.getElementById('fn').value.trim();
+    const wpp=document.getElementById('fw').value.trim();
+    const cid=document.getElementById('fc').value.trim();
+    const sint=document.getElementById('fsint').value.trim();
+    const msg=encodeURIComponent(`*🩺 VascularAI — Solicitação de Agendamento*\n\n👤 *Paciente:* ${nome||'Não informado'}\n📱 *WhatsApp:* ${wpp||'Não informado'}\n🔊 *Doppler:* ${ds}\n🩺 *Classificação IA:* Grau ${res?.score||'?'}/9 — ${info?.lbl||'?'} (${res?.confidence||'?'}% confiança)\n💊 *Protocolo:* ${info?.tag||'?'}\n🏙 *Cidade:* ${cid||'Não informado'}\n💬 *Sintomas:* ${sint||'Não informado'}\n\n👉 Gostaria de agendar uma consulta.\n\n⚠️ _Triagem por IA experimental — CFM nº 2.314/2022_`);
+    document.getElementById('wppLink').href=`https://wa.me/${WPP}?text=${msg}`;
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══ LEAD → SUPABASE ══
+async function saveLead(){
+  const nm=document.getElementById('fn').value.trim();
+  const wp=document.getElementById('fw').value.trim();
+  const ci=document.getElementById('fc').value.trim();
+  if(!nm||!wp||!ci){alert('Por favor, preencha Nome, WhatsApp e Cidade.');return;}
+
+  const btn=document.querySelector('#step4 .btnp');
+  btn.disabled=true;btn.textContent='Salvando...';
+
+  const ds=dop==='pos'?'Positivo — Refluxo confirmado':dop==='neg'?'Negativo — Sem refluxo':'Não realizado';
+  const rng=g=>g<=3?'1-3':g<=6?'4-6':'7-9';
+  const info=TX[rng(res?.score||0)];
+
+  const payload={
+    nome:nm,
+    whatsapp:wp,
+    email:document.getElementById('fe').value.trim()||null,
+    nascimento:document.getElementById('fnas').value||null,
+    cidade:ci,
+    convenio:document.getElementById('fconv').value||null,
+    origem:document.getElementById('forig').value||null,
+    sintomas:document.getElementById('fsint').value.trim()||null,
+    grau:res?.score||0,
+    grau_label:info?.lbl||'',
+    protocolo:info?.tag||'',
+    doppler:ds,
+    confianca:res?.confidence||0,
+    medial:res?.medialLocation||false,
+    grosso_calibre:res?.grossCaliberElevated||false,
+    refluxo:res?.reflux||false
+  };
+
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/leads`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SB_KEY,
+        'Authorization':`Bearer ${SB_KEY}`,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify(payload)
+    });
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.message||r.statusText);}
+    goTo(5);
+  }catch(e){
+    console.error('Supabase erro:',e);
+    // fallback silencioso — segue para agendamento mesmo se falhar
+    goTo(5);
+  }finally{
+    btn.disabled=false;btn.textContent='💾 Salvar dados e ir para Agendamento →';
+  }
+}
+
+// ══ FORM ══
+function mPhone(el){let v=el.value.replace(/\D/g,'');if(v.length>10)v=v.replace(/^(\d{2})(\d{5})(\d{4}).*/,'($1) $2-$3');else if(v.length>6)v=v.replace(/^(\d{2})(\d{4})(\d*).*/,'($1) $2-$3');else if(v.length>2)v=v.replace(/^(\d{2})(\d*).*/,'($1) $2');el.value=v}
+
+// ══ RESET ══
+function resetAll(){
+  dop=null;b64=null;mime=null;res=null;
+  ['pos','neg','no'].forEach(x=>document.getElementById('dp_'+x)?.classList.remove('sel'));
+  document.getElementById('btnDopNext').disabled=true;
+  resetUp();
+  document.getElementById('btnAn').classList.remove('hidden');
+  document.getElementById('loadSteps').innerHTML='';
+  ['fn','fw','fe','fc','fsint'].forEach(x=>document.getElementById(x).value='');
+  ['fnas','fconv','forig'].forEach(x=>document.getElementById(x).value='');
+  goTo(1);
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+</script>
+</body>
+</html>
