@@ -203,18 +203,20 @@ h1 em{font-style:italic;color:var(--accent2)}
 
 
 <!-- NAV -->
-<div class="pstrip" id="pStrip" style="display:none"><div class="pfill" id="pFill" style="width:20%"></div></div>
+<div class="pstrip" id="pStrip" style="display:none"><div class="pfill" id="pFill" style="width:0%"></div></div>
 <div class="snav" id="sNav" style="display:none">
   <div class="sdw">
-    <div class="sn active" id="sn1"><div class="snum">1</div><span class="slbl">Doppler</span></div>
+    <div class="sn active" id="sn1"><div class="snum">1</div><span class="slbl">Orientações</span></div>
     <div class="sline"></div>
-    <div class="sn" id="sn2"><div class="snum">2</div><span class="slbl">Foto</span></div>
+    <div class="sn" id="sn2"><div class="snum">2</div><span class="slbl">Doppler</span></div>
     <div class="sline"></div>
-    <div class="sn" id="sn3"><div class="snum">3</div><span class="slbl">Resultado</span></div>
+    <div class="sn" id="sn3"><div class="snum">3</div><span class="slbl">Foto</span></div>
     <div class="sline"></div>
-    <div class="sn" id="sn4"><div class="snum">4</div><span class="slbl">Dados</span></div>
+    <div class="sn" id="sn4"><div class="snum">4</div><span class="slbl">Resultado</span></div>
     <div class="sline"></div>
-    <div class="sn" id="sn5"><div class="snum">5</div><span class="slbl">Agendamento</span></div>
+    <div class="sn" id="sn5"><div class="snum">5</div><span class="slbl">Dados</span></div>
+    <div class="sline"></div>
+    <div class="sn" id="sn6"><div class="snum">6</div><span class="slbl">Agendamento</span></div>
   </div>
 </div>
 
@@ -227,10 +229,48 @@ h1 em{font-style:italic;color:var(--accent2)}
 
   </div>
 
-  <!-- STEP 1: DOPPLER -->
+  <!-- STEP 1: ORIENTAÇÕES -->
   <div id="step1">
     <div class="hero">
-      <div class="eyebrow"><span class="pulse"></span> Triagem Vascular Inteligente</div>
+      <div class="eyebrow"><span class="pulse"></span> Passo 1 de 4 — Leia antes de começar</div>
+      <h1>Bem-vindo à<br><em>triagem vascular</em></h1>
+      <p class="hsub">Em apenas 3 minutos nossa IA analisa suas varizes e orienta o próximo passo. Antes, confira as instruções abaixo.</p>
+    </div>
+    <div class="card anim">
+      <div class="ctit">🩺 O que é esta triagem?</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:14px">Esta ferramenta utiliza inteligência artificial para analisar fotos das suas pernas e estimar o grau de insuficiência venosa, orientando sobre as opções de tratamento disponíveis.</p>
+      <div class="al ali" style="margin-bottom:14px">⚠️ <span>Triagem experimental — <strong>não substitui</strong> avaliação médica presencial. Diagnóstico final deve ser feito por cirurgião vascular. CFM nº 2.314/2022.</span></div>
+      <div class="ctit" style="margin-top:6px">📸 Como tirar a foto corretamente</div>
+      <div style="display:flex;flex-direction:column;gap:9px;margin-top:10px">
+        <div style="display:flex;align-items:flex-start;gap:11px;padding:10px 13px;background:var(--s2);border-radius:10px;border-left:3px solid var(--accent)">
+          <span style="font-size:18px;flex-shrink:0">🧍</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px">Fotografe em pé</div><div style="font-size:13px;color:var(--muted);line-height:1.5">Fique em ortostatismo — as varizes ficam mais visíveis quando você está de pé.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:11px;padding:10px 13px;background:var(--s2);border-radius:10px;border-left:3px solid var(--accent)">
+          <span style="font-size:18px;flex-shrink:0">💡</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px">Boa iluminação</div><div style="font-size:13px;color:var(--muted);line-height:1.5">Prefira luz natural ou ambiente bem iluminado. Evite sombras sobre a perna.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:11px;padding:10px 13px;background:var(--s2);border-radius:10px;border-left:3px solid var(--accent)">
+          <span style="font-size:18px;flex-shrink:0">📐</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px">Perna inteira visível</div><div style="font-size:13px;color:var(--muted);line-height:1.5">Enquadre da coxa ao tornozelo, mostrando toda a extensão da perna com pele visível.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:11px;padding:10px 13px;background:var(--s2);border-radius:10px;border-left:3px solid var(--accent)">
+          <span style="font-size:18px;flex-shrink:0">🎯</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px">Foco nas varizes</div><div style="font-size:13px;color:var(--muted);line-height:1.5">Se tiver varizes na face interna da perna (lado do joelho), certifique-se que aparecem na foto — são as mais importantes.</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:11px;padding:10px 13px;background:var(--s2);border-radius:10px;border-left:3px solid rgba(192,57,43,.5)">
+          <span style="font-size:18px;flex-shrink:0">🚫</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:2px">Não envie fotos íntimas</div><div style="font-size:13px;color:var(--muted);line-height:1.5">Envie apenas fotos da perna (da coxa ao pé). Fotos de outras regiões serão recusadas automaticamente.</div></div>
+        </div>
+      </div>
+    </div>
+    <button class="btnp" onclick="goTo(2)">Entendi, vamos começar →</button>
+  </div>
+
+  <!-- STEP 2: DOPPLER -->
+  <div id="step2" class="hidden">
+    <div class="hero">
+      <div class="eyebrow"><span class="pulse"></span> Passo 2 de 4 — Ultrassom Doppler</div>
       <h1>Antes da foto,<br>uma <em>pergunta importante</em></h1>
       <p class="hsub">O resultado do doppler nos permite classificar suas varizes com muito mais precisão.</p>
     </div>
@@ -242,12 +282,14 @@ h1 em{font-style:italic;color:var(--accent2)}
         <div class="dopt" id="dp_no" onclick="selDop('no')"><div class="drad"></div><div><div class="dt">❌ Não realizei doppler ainda</div><div class="dd">A IA classificará pelas características visuais com confiança reduzida.</div><span class="dtag ta">Classificação por imagem</span></div></div>
       </div>
     </div>
-    <button class="btnp" id="btnDopNext" disabled onclick="goTo(2)">Enviar foto das varizes →</button>
+    <button class="btnp" id="btnDopNext" disabled onclick="goTo(3)">Enviar foto das varizes →</button>
+    <button class="btno" onclick="goTo(1)">← Voltar</button>
   </div>
 
-  <!-- STEP 2: FOTO -->
-  <div id="step2" class="hidden">
+  <!-- STEP 3: FOTO -->
+  <div id="step3" class="hidden">
     <div class="hero" style="margin-bottom:24px">
+      <div class="eyebrow"><span class="pulse"></span> Passo 3 de 4 — Foto das varizes</div>
       <h1 style="font-size:clamp(22px,4vw,37px)">Agora envie a<br><em>foto das varizes</em></h1>
       <p class="hsub">Fotografe a perna em pé, com boa iluminação e pele visível.</p>
     </div>
@@ -271,45 +313,60 @@ h1 em{font-style:italic;color:var(--accent2)}
       <div style="font-size:14px;color:var(--muted);margin-bottom:12px">Analisando sua foto...</div>
       <div id="loadSteps" style="display:flex;flex-direction:column;gap:7px;align-items:center"></div>
     </div>
-    <button class="btno" onclick="goTo(1)">← Voltar</button>
+    <button class="btno" onclick="goTo(2)">← Voltar</button>
   </div>
 
-  <!-- STEP 3: RESULTADO -->
-  <div id="step3" class="hidden">
+  <!-- STEP 4: RESULTADO -->
+  <div id="step4" class="hidden">
+    <div class="hero" style="margin-bottom:20px">
+      <div class="eyebrow"><span class="pulse"></span> Passo 4 de 4 — Resultado da Análise</div>
+      <h1 style="font-size:clamp(22px,4vw,36px)">Resultado da<br><em>triagem vascular</em></h1>
+      <p class="hsub">Classificação, achados clínicos e confiança da análise. Preencha seus dados para revelar o protocolo de tratamento.</p>
+    </div>
     <div class="card anim" id="resCard"></div>
     <div id="urgBlock" class="urg anim hidden"></div>
-    <button class="btnp" onclick="goTo(4)" style="margin-bottom:0">📋 Continuar para Agendamento →</button>
+    <!-- Tratamentos bloqueados — revelados após lead -->
+    <div id="txLocked" class="hidden">
+      <div style="background:linear-gradient(135deg,rgba(26,58,92,.04),rgba(26,58,92,.08));border:2px dashed rgba(26,58,92,.25);border-radius:18px;padding:30px 24px;text-align:center;margin-bottom:16px">
+        <div style="font-size:42px;margin-bottom:12px">🔒</div>
+        <div style="font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:8px">Protocolo de tratamento disponível</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:20px;max-width:320px;margin-left:auto;margin-right:auto">Preencha seus dados de contato para receber o protocolo completo personalizado para o seu caso, com todas as opções de tratamento indicadas.</div>
+        <button class="btnp" onclick="goTo(5)" style="max-width:300px;margin:0 auto 10px">📋 Preencher dados e ver tratamentos →</button>
+        <div><button onclick="revealTx();goTo(4)" style="background:none;border:none;font-size:13px;color:var(--muted);cursor:pointer;text-decoration:underline;padding:4px">Pular cadastro → ver tratamentos mesmo assim</button></div>
+      </div>
+    </div>
+    <div id="txUnlocked" class="hidden"></div>
+    <div id="urgBlockTx" class="hidden"></div>
     <button class="btno" onclick="resetAll()">↩ Refazer Análise</button>
   </div>
 
-  <!-- STEP 4: DADOS -->
-  <div id="step4" class="hidden">
+  <!-- STEP 5: DADOS -->
+  <div id="step5" class="hidden">
     <div class="hero" style="margin-bottom:20px">
       <h1 style="font-size:clamp(21px,4vw,34px)">Seus <em>dados</em><br>para contato</h1>
-      <p class="hsub">Deixe seus dados para acompanhamento. Ou pule direto para o agendamento.</p>
+      <p class="hsub">Preencha para receber o protocolo de tratamento completo e entrar em contato para agendamento.</p>
     </div>
     <div class="card anim">
       <div class="ctit">👤 Dados Pessoais</div>
       <div class="fgrid">
         <div class="field fc2"><label>Nome completo <span class="req">*</span></label><input type="text" id="fn" placeholder="Ex: Maria Silva"></div>
+        <div class="field"><label>Data de nascimento</label><input type="date" id="fnas"></div>
         <div class="field"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="fw" placeholder="(85) 99999-9999" oninput="mPhone(this)"></div>
         <div class="field"><label>E-mail</label><input type="email" id="fe" placeholder="seu@email.com"></div>
-        <div class="field"><label>Data de nascimento</label><input type="date" id="fnas"></div>
         <div class="field"><label>Cidade <span class="req">*</span></label><input type="text" id="fc" placeholder="Ex: Fortaleza"></div>
         <div class="field"><label>Convênio / Plano</label>
           <select id="fconv"><option value="">Selecione...</option><option>Particular</option><option>Unimed</option><option>Bradesco Saúde</option><option>Amil</option><option>SulAmérica</option><option>Hapvida</option><option>Outro</option></select></div>
         <div class="field"><label>Como nos conheceu?</label>
           <select id="forig"><option value="">Selecione...</option><option>Instagram</option><option>Google</option><option>Indicação de amigo</option><option>WhatsApp</option><option>Outro</option></select></div>
-        <div class="field fc2"><label>Principais sintomas</label><textarea id="fsint" rows="2" placeholder="Ex: dor, inchaço, cãibras, cansaço nas pernas..."></textarea></div>
       </div>
     </div>
-    <button class="btnp" onclick="saveLead()">💾 Salvar dados e ir para Agendamento →</button>
-    <button class="btno" onclick="goTo(5)" style="color:var(--accent2);border-color:rgba(26,58,92,.2);font-size:13px">Pular cadastro → ir direto ao agendamento</button>
-    <button class="btno" onclick="goTo(3)">← Voltar ao Resultado</button>
+    <button class="btnp" onclick="saveLead()">💾 Salvar dados e ver tratamentos →</button>
+    <button class="btno" onclick="revealTx();goTo(4)" style="color:var(--accent2);border-color:rgba(26,58,92,.2);font-size:13px">Pular cadastro → ver tratamentos mesmo assim</button>
+    <button class="btno" onclick="goTo(4)">← Voltar ao Resultado</button>
   </div>
 
-  <!-- STEP 5: AGENDAMENTO -->
-  <div id="step5" class="hidden">
+  <!-- STEP 6: AGENDAMENTO -->
+  <div id="step6" class="hidden">
     <div class="hero" style="margin-bottom:24px">
       <h1 style="font-size:clamp(22px,4vw,38px)">Agendar sua<br><em>consulta</em></h1>
       <p class="hsub">Acesse nossa agenda online ou entre em contato pelo WhatsApp.</p>
@@ -355,7 +412,7 @@ h1 em{font-style:italic;color:var(--accent2)}
     </div>
 
     <div class="al alw anim" style="margin-bottom:13px">⚠️ <span>Triagem por IA experimental — não substitui avaliação médica presencial. Diagnóstico e tratamento devem ser definidos por cirurgião vascular ou flebologista. CFM nº 2.314/2022.</span></div>
-    <button class="btno" onclick="goTo(4)">← Voltar</button>
+    <button class="btno" onclick="goTo(5)">← Voltar</button>
     <button class="btno" onclick="resetAll()" style="margin-top:8px">🔄 Nova Triagem</button>
   </div>
 
@@ -541,7 +598,10 @@ async function runAI(){
   }else if(dop==='neg'){
     dctx=`INSTRUÇÃO CRÍTICA — DOPPLER NEGATIVO: Sem refluxo confirmado. Classificação MÁXIMA grau 6. NUNCA 7, 8 ou 9. reflux=false. confidence 55-75.`;
   }else{
-    dctx=`SEM DOPPLER: Classifique pelas características visuais. Varizes com relevo físico elevado E calibre aparente >5mm → obrigatoriamente grau 7-9 (highRelief=true, grossCaliberElevated=true). Peso extra se face medial da perna. Sem essas características → grau 1-6. needsDoppler=true. confidence 35-60.`;
+    dctx=`SEM DOPPLER: Classifique pelas características visuais. 
+REGRA ESPECIAL — FACE MEDIAL INFRAGENICULAR: Se identificar varizes de grosso calibre (relevo elevado + calibre aparente >5mm) localizadas NA FACE MEDIAL DA PERNA E ABAIXO DO JOELHO (infragenicular), subentenda refluxo safena magna e classifique obrigatoriamente entre grau 7-9 (MÍNIMO 7). O grau exato dentro de 7-9 depende das demais características visuais: apenas tronculares → grau 7; telangiectasias + tronculares → grau 8; telangiectasias + reticulares + tronculares → grau 9. Marque medialInfragenicular=true, highRelief=true, grossCaliberElevated=true, reflux=true.
+Se essas varizes de grosso calibre estiverem em OUTRA REGIÃO (face lateral, posterior, coxa sem face medial infragenicular), NÃO subentenda refluxo sem doppler — classifique grau 4-6 (needsDoppler=true).
+Varizes sem relevo elevado ou calibre <5mm → grau 1-6 independente da localização. needsDoppler=true. confidence 35-60.`;
   }
   const sys=`Você é especialista sênior em cirurgia vascular do Dr. André Farias. ${dctx}
 
@@ -567,10 +627,10 @@ ESCALA CLÍNICA:
 · Grau 8: Telangiectasias + tronculares + refluxo.
 · Grau 9: Telangiectasias + reticulares + tronculares + refluxo. Quadro completo.
 
-REGRA SEM DOPPLER — grosso calibre: relevo físico evidente + calibre >5mm → obrigatoriamente grau 7-9. Marque highRelief=true e grossCaliberElevated=true. Peso extra se face medial.
+REGRA SEM DOPPLER — localização medial infragenicular: varizes de grosso calibre (relevo elevado + calibre >5mm) em face medial DA PERNA ABAIXO DO JOELHO → subentende refluxo safena magna → obrigatoriamente grau 7-9 (MÍNIMO 7). O grau exato dentro de 7-9 depende das demais características visuais: se houver apenas tronculares → grau 7; se houver telangiectasias + tronculares → grau 8; se houver telangiectasias + reticulares + tronculares → grau 9. Marque medialInfragenicular=true, highRelief=true, grossCaliberElevated=true, reflux=true. Se grosso calibre em outra região → grau 4-6, needsDoppler=true, NÃO subentender refluxo.
 
 Responda SOMENTE JSON sem markdown:
-{"isValid":true,"score":4,"range":"4-6","mainFindings":"descrição clínica 2-3 frases","doubts":"","telangiectasias":false,"feederVeins":false,"truncalVarices":true,"highRelief":false,"grossCaliberElevated":false,"medialLocation":false,"reflux":false,"needsDoppler":false,"confidence":68}
+{"isValid":true,"score":4,"range":"4-6","mainFindings":"descrição clínica 2-3 frases","doubts":"","telangiectasias":false,"feederVeins":false,"truncalVarices":true,"highRelief":false,"grossCaliberElevated":false,"medialLocation":false,"medialInfragenicular":false,"reflux":false,"needsDoppler":false,"confidence":68}
 Foto inválida: {"isValid":false,"reason":"tipo","mainFindings":"mensagem clara orientando o paciente"}`;
 
   let raw='';
@@ -588,12 +648,22 @@ Foto inválida: {"isValid":false,"reason":"tipo","mainFindings":"mensagem clara 
       if(dop==='pos'&&res.score<7){res.score=7;res.range='7-9';res.reflux=true;res.doubts='[Reclassificado: doppler confirmou refluxo → grau mínimo 7.]'}
       // Doppler negativo → máximo grau 6
       if(dop==='neg'&&res.score>6){res.score=6;res.range='4-6';res.reflux=false;res.doubts='[Limitado ao grau 6: doppler negativo excluiu refluxo safena.]';if(res.confidence>70)res.confidence=65}
-      // Sem doppler + relevo elevado + grosso calibre → obrigatoriamente 7+
-      if(dop==='no'&&(res.grossCaliberElevated||res.highRelief)&&res.score<7){
-        res.score=7;res.range='7-9';
-        const loc=res.medialLocation?' Localização em face medial (trajeto safena magna) reforça suspeita.':'';
-        res.doubts=(res.doubts||'')+` [Varizes com relevo elevado e grosso calibre detectadas → grau mínimo 7. Doppler obrigatório.${loc}]`;
-        if(res.confidence>55)res.confidence=52;
+      // Sem doppler + face medial infragenicular + grosso calibre → refluxo implícito → grau 7+
+      if(dop==='no'&&res.medialInfragenicular&&(res.grossCaliberElevated||res.highRelief)&&res.score<7){
+        // Determina grau mínimo baseado nas demais características visuais
+        let impliedScore=7;
+        if(res.telangiectasias&&(res.feederVeins||res.truncalVarices))impliedScore=9;
+        else if(res.telangiectasias&&res.truncalVarices)impliedScore=8;
+        res.score=impliedScore;
+        res.range='7-9';res.reflux=true;
+        res.doubts=(res.doubts||'')+` [Varizes de grosso calibre em face medial infragenicular — trajeto safena magna. Refluxo venoso subentendido → Grau ${impliedScore}. Doppler confirmatório indicado.]`;
+        if(res.confidence>60)res.confidence=58;
+      }
+      // Sem doppler + grosso calibre em OUTRA região → não implica refluxo, max grau 6 se não houver outro critério
+      if(dop==='no'&&!res.medialInfragenicular&&(res.grossCaliberElevated||res.highRelief)&&res.score>=7){
+        res.doubts=(res.doubts||'')+` [Varizes de grosso calibre fora da face medial infragenicular — refluxo não subentendido sem doppler. Doppler obrigatório para confirmar grau.]`;
+        res.needsDoppler=true;
+        if(res.confidence>55)res.confidence=50;
       }
     }
   }catch(e){
@@ -603,16 +673,20 @@ Foto inválida: {"isValid":false,"reason":"tipo","mainFindings":"mensagem clara 
   document.getElementById('loadBlock').classList.add('hidden');
   document.getElementById('btnAn').classList.remove('hidden');
   document.getElementById('btnAn').disabled=false;
-  renderRes();goTo(3);
+  renderRes();goTo(4);
 }
 
-// ══ RENDER RESULT ══
+// ══ RENDER RESULT (PARCIAL — sem tratamentos) ══
 function renderRes(){
   const card=document.getElementById('resCard');
   const urgB=document.getElementById('urgBlock');
+  document.getElementById('txLocked').classList.add('hidden');
+  document.getElementById('txUnlocked').classList.add('hidden');
+  document.getElementById('urgBlockTx').classList.add('hidden');
+
   if(!res||!res.isValid){
     const rm={intimate:{icon:'🚫',title:'Foto não compatível',color:'var(--red)'},wrong_body_part:{icon:'📸',title:'Foto incorreta — não é uma perna',color:'var(--amber)'},poor_quality:{icon:'🔆',title:'Qualidade insuficiente',color:'var(--amber)'}}[res?.reason]||{icon:'⚠️',title:'Não foi possível classificar',color:'var(--amber)'};
-    card.innerHTML=`<div style="text-align:center;padding:18px 0 12px"><div style="font-size:46px;margin-bottom:12px">${rm.icon}</div><div style="font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:${rm.color};margin-bottom:10px">${rm.title}</div><div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto">${res?.mainFindings||'Envie uma foto da perna com boa iluminação.'}</div><button class="btnp" onclick="goTo(2);resetUp()" style="max-width:260px;margin:0 auto">📷 Enviar nova foto</button></div>`;
+    card.innerHTML=`<div style="text-align:center;padding:18px 0 12px"><div style="font-size:46px;margin-bottom:12px">${rm.icon}</div><div style="font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:${rm.color};margin-bottom:10px">${rm.title}</div><div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto">${res?.mainFindings||'Envie uma foto da perna com boa iluminação.'}</div><button class="btnp" onclick="goTo(3);resetUp()" style="max-width:260px;margin:0 auto">📷 Enviar nova foto</button></div>`;
     urgB.classList.add('hidden');return;
   }
   const info=TX[res.range]||TX['4-6'];
@@ -625,7 +699,8 @@ function renderRes(){
   else if(dop==='neg'){dbadge=`<div class="al alg" style="margin-bottom:11px">🔊 <span><strong>Doppler negativo — Sem refluxo.</strong> Classificação máxima: Grau 6.</span></div>`}
   else{dbadge=`<div class="al alw" style="margin-bottom:11px">🔊 <span><strong>Doppler não realizado.</strong> Classificação por análise visual com confiança reduzida.</span></div>`}
   let bars='';for(let i=1;i<=9;i++){const c=i<=3?'sg':i<=6?'sa':'sr';bars+=`<div class="seg ${i<=res.score?c:''} ${i===res.score?'cur':''}" title="Grau ${i}"></div>`}
-  const finds=[['🔴','Telangiectasias — veias intradérmicas < 1mm',res.telangiectasias],['🟡','Veias reticulares / feeder veins — 1–3mm, sem relevo',res.feederVeins],['🔵','Varizes tronculares — ≥ 3mm visíveis',res.truncalVarices],['📐','Relevo físico elevado na superfície cutânea',res.highRelief],['📏','Grosso calibre aparente > 5mm',res.grossCaliberElevated],['📍','Localização em face medial (trajeto safena magna)',res.medialLocation],['⚡','Refluxo venoso safena/perfurantes',res.reflux]].filter(([,,v])=>v===true);
+  const finds=[['🔴','Telangiectasias — veias intradérmicas < 1mm',res.telangiectasias],['🟡','Veias reticulares / feeder veins — 1–3mm, sem relevo',res.feederVeins],['🔵','Varizes tronculares — ≥ 3mm visíveis',res.truncalVarices],['📐','Relevo físico elevado na superfície cutânea',res.highRelief],['📏','Grosso calibre aparente > 5mm',res.grossCaliberElevated],['📍','Face medial infragenicular (trajeto safena magna)',res.medialInfragenicular||res.medialLocation],['⚡','Refluxo venoso safena/perfurantes',res.reflux]].filter(([,,v])=>v===true);
+  // Resultado parcial — sem tratamentos
   card.innerHTML=`${dbadge}
     <div class="shdr">
       <div style="display:flex;align-items:center;gap:11px">
@@ -636,41 +711,65 @@ function renderRes(){
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:11px;color:var(--muted);width:60px;flex-shrink:0">Confiança</span><div style="flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden"><div style="width:${conf}%;height:100%;background:${cc};border-radius:3px"></div></div><span style="font-size:11px;color:${cc};font-weight:700;width:28px;text-align:right">${conf}%</span></div>
     <div class="sbw" style="margin-bottom:12px"><span style="font-size:11px;color:var(--muted);width:44px;flex-shrink:0">Grau ${res.score}/9</span><div class="segs">${bars}</div><span style="font-size:11px;color:var(--muted);width:48px;text-align:right;flex-shrink:0">${info.lbl}</span></div>
-    ${hd?`<div style="background:var(--as);border:1.5px solid rgba(212,130,10,.25);border-radius:10px;padding:10px 13px;margin-bottom:11px;display:flex;gap:8px"><span>⚠️</span><div><div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:2px">Dúvida diagnóstica registrada</div><div style="font-size:13px;color:var(--muted);line-height:1.55">${res.doubts}</div></div></div>`:''}
+    ${res.needsDoppler?`<div class="al alw" style="margin-bottom:11px">🔊 <span><strong>Doppler indicado</strong> — Este caso requer ultrassom doppler para confirmação do grau e definição do tratamento.</span></div>`:''}
+    ${hd?`<div style="background:var(--as);border:1.5px solid rgba(212,130,10,.25);border-radius:10px;padding:10px 13px;margin-bottom:11px;display:flex;gap:8px"><span>⚠️</span><div><div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:2px">Observação clínica</div><div style="font-size:13px;color:var(--muted);line-height:1.55">${res.doubts}</div></div></div>`:''}
     <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:7px">📋 Achados Clínicos</div>
     <p style="font-size:14px;line-height:1.7;color:var(--muted);margin-bottom:10px">${res.mainFindings}</p>
     ${finds.length?finds.map(([ic,lb])=>`<div class="frow"><span>${ic}</span><span style="flex:1">${lb}</span><span style="font-weight:700;font-size:11px;color:var(--green)">✓</span></div>`).join(''):'<p style="font-size:13px;color:var(--muted);padding:5px 0">Nenhum achado patológico identificado.</p>'}
-    <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);margin:14px 0 6px">💊 Tratamentos Indicados — Graus ${res.range}</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Protocolo: <strong style="color:${info.col}">${info.tag}</strong></div>
-    ${info.items.map(t=>`<div class="titem"><div class="tico">${t.i}</div><div><div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px">${t.n}<span class="pbadge">${t.p}</span></div><div style="font-size:13px;color:var(--muted);line-height:1.5">${t.d}</div></div></div>`).join('')}
     <div class="al alw" style="margin-top:12px">⚠️ <span>Triagem por IA experimental — não substitui avaliação médica presencial. CFM nº 2.314/2022.</span></div>`;
-  urgB.className=`urg ${info.ucls} anim`;urgB.classList.remove('hidden');
-  urgB.innerHTML=`<div class="urgt">${info.ut}</div><div class="urgd">${info.ud}</div>`;
+
+  urgB.classList.add('hidden');
+  // Mostrar bloco de tratamentos bloqueado
+  document.getElementById('txLocked').classList.remove('hidden');
+}
+
+// ══ REVEAL TREATMENTS (após lead ou skip) ══
+function revealTx(){
+  const info=TX[res?.range]||TX['4-6'];
+  // Preenche o conteúdo desbloqueado
+  document.getElementById('txUnlocked').innerHTML=`
+    <div class="card anim" style="margin-bottom:12px">
+      <div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px">💊 Tratamentos Indicados — Graus ${res.range}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Protocolo: <strong style="color:${info.col}">${info.tag}</strong></div>
+      ${info.items.map(t=>`<div class="titem"><div class="tico">${t.i}</div><div><div style="font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px">${t.n}<span class="pbadge">${t.p}</span></div><div style="font-size:13px;color:var(--muted);line-height:1.5">${t.d}</div></div></div>`).join('')}
+    </div>`;
+  document.getElementById('urgBlockTx').className=`urg ${info.ucls} anim`;
+  document.getElementById('urgBlockTx').innerHTML=`<div class="urgt">${info.ut}</div><div class="urgd">${info.ud}</div>`;
+  document.getElementById('urgBlockTx').classList.remove('hidden');
+  document.getElementById('txLocked').classList.add('hidden');
+  document.getElementById('txUnlocked').classList.remove('hidden');
+  // Adicionar botão de agendamento
+  if(!document.getElementById('btnAgendar')){
+    const btn=document.createElement('button');
+    btn.id='btnAgendar';btn.className='btnp';btn.style.marginBottom='0';
+    btn.textContent='📅 Agendar Consulta →';
+    btn.onclick=()=>goTo(6);
+    document.getElementById('txUnlocked').appendChild(btn);
+  }
 }
 
 // ══ NAVIGATION ══
 function goTo(n){
-  [1,2,3,4,5].forEach(i=>{
+  [1,2,3,4,5,6].forEach(i=>{
     document.getElementById('step'+i).classList.toggle('hidden',i!==n);
     const sn=document.getElementById('sn'+i);sn.classList.remove('active','done');
     if(i===n)sn.classList.add('active');else if(i<n)sn.classList.add('done');
   });
-  document.getElementById('pFill').style.width=[20,40,60,80,100][n-1]+'%';
-  if(n===2){
+  document.getElementById('pFill').style.width=[16,32,48,64,82,100][n-1]+'%';
+  if(n===3){
     const b=document.getElementById('dopBanner');
     if(dop==='pos'){b.className='al alr anim';b.innerHTML=`🔊 <span><strong>Doppler positivo</strong> — Refluxo venoso confirmado. Classificação mínima: Grau 7.</span>`}
     else if(dop==='neg'){b.className='al alg anim';b.innerHTML=`🔊 <span><strong>Doppler negativo</strong> — Sem refluxo. Classificação máxima: Grau 6.</span>`}
     else{b.className='al alw anim';b.innerHTML=`🔊 <span><strong>Sem doppler</strong> — Classificação pelas características visuais com confiança reduzida.</span>`}
   }
-  if(n===5){
+  if(n===6){
     const info=res?.range?TX[res.range]:null;
     if(info){document.getElementById('protBanner').innerHTML=`🩺 <span>Protocolo indicado: <strong>${info.tag}</strong> · Grau ${res.score}/9 — ${info.lbl} · Urgência: <strong>${info.urg}</strong></span>`}
     const ds=dop==='pos'?'Positivo — Refluxo confirmado':dop==='neg'?'Negativo — Sem refluxo':'Não realizado';
     const nome=document.getElementById('fn').value.trim();
     const wpp=document.getElementById('fw').value.trim();
     const cid=document.getElementById('fc').value.trim();
-    const sint=document.getElementById('fsint').value.trim();
-    const msg=encodeURIComponent(`*🩺 VascularAI — Solicitação de Agendamento*\n\n👤 *Paciente:* ${nome||'Não informado'}\n📱 *WhatsApp:* ${wpp||'Não informado'}\n🔊 *Doppler:* ${ds}\n🩺 *Classificação IA:* Grau ${res?.score||'?'}/9 — ${info?.lbl||'?'} (${res?.confidence||'?'}% confiança)\n💊 *Protocolo:* ${info?.tag||'?'}\n🏙 *Cidade:* ${cid||'Não informado'}\n💬 *Sintomas:* ${sint||'Não informado'}\n\n👉 Gostaria de agendar uma consulta.\n\n⚠️ _Triagem por IA experimental — CFM nº 2.314/2022_`);
+    const msg=encodeURIComponent(`*🩺 VascularAI — Solicitação de Agendamento*\n\n👤 *Paciente:* ${nome||'Não informado'}\n📱 *WhatsApp:* ${wpp||'Não informado'}\n🔊 *Doppler:* ${ds}\n🩺 *Classificação IA:* Grau ${res?.score||'?'}/9 — ${info?.lbl||'?'} (${res?.confidence||'?'}% confiança)\n💊 *Protocolo:* ${info?.tag||'?'}\n🏙 *Cidade:* ${cid||'Não informado'}\n\n👉 Gostaria de agendar uma consulta.\n\n⚠️ _Triagem por IA experimental — CFM nº 2.314/2022_`);
     document.getElementById('wppLink').href=`https://wa.me/${WPP}?text=${msg}`;
   }
   window.scrollTo({top:0,behavior:'smooth'});
@@ -698,7 +797,7 @@ async function saveLead(){
     cidade:ci,
     convenio:document.getElementById('fconv').value||null,
     origem:document.getElementById('forig').value||null,
-    sintomas:document.getElementById('fsint').value.trim()||null,
+    sintomas:null,
     grau:res?.score||0,
     grau_label:info?.lbl||'',
     protocolo:info?.tag||'',
@@ -721,11 +820,10 @@ async function saveLead(){
       body:JSON.stringify(payload)
     });
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.message||r.statusText);}
-    goTo(5);
+    revealTx();goTo(4);
   }catch(e){
     console.error('Supabase erro:',e);
-    // fallback silencioso — segue para agendamento mesmo se falhar
-    goTo(5);
+    revealTx();goTo(4);
   }finally{
     btn.disabled=false;btn.textContent='💾 Salvar dados e ir para Agendamento →';
   }
@@ -742,8 +840,12 @@ function resetAll(){
   resetUp();
   document.getElementById('btnAn').classList.remove('hidden');
   document.getElementById('loadSteps').innerHTML='';
-  ['fn','fw','fe','fc','fsint'].forEach(x=>document.getElementById(x).value='');
+  ['fn','fw','fe','fc'].forEach(x=>document.getElementById(x).value='');
   ['fnas','fconv','forig'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('txLocked').classList.add('hidden');
+  document.getElementById('txUnlocked').classList.add('hidden');
+  document.getElementById('urgBlockTx').classList.add('hidden');
+  const btn=document.getElementById('btnAgendar');if(btn)btn.remove();
   goTo(1);
 }
 
