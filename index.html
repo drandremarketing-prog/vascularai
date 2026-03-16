@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VascularAI — Triagem Vascular</title>
+<!-- Google Analytics — substitua G-XXXXXXXXXX pelo seu ID em https://analytics.google.com -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-XXXXXXXXXX');
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -424,6 +432,22 @@ const WPP = '5585989781213';
 const SB_URL = 'https://odkcrqpabtfnmjikumrq.supabase.co';
 const SB_KEY = 'sb_publishable_KcugSs0G9eqH22pLWVXhQA_6BBrxUuU';
 
+// ══ SESSION & TRACKING ══
+const SESSION_ID = Math.random().toString(36).slice(2)+Date.now().toString(36);
+async function track(event,meta={}){
+  try{
+    await fetch(`${SB_URL}/rest/v1/events`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'},
+      body:JSON.stringify({session_id:SESSION_ID,event,meta})
+    });
+  }catch(e){/* silencioso */}
+  // também envia para Google Analytics
+  if(typeof gtag!=='undefined')gtag('event',event,{session_id:SESSION_ID,...meta});
+}
+// Dispara ao carregar a página
+window.addEventListener('load',()=>track('page_view'));
+
 // ══ STATE ══
 let dop=null, b64=null, mime=null, res=null;
 
@@ -756,6 +780,9 @@ function goTo(n){
     if(i===n)sn.classList.add('active');else if(i<n)sn.classList.add('done');
   });
   document.getElementById('pFill').style.width=[16,32,48,64,82,100][n-1]+'%';
+  // Tracking de funil
+  const evtMap={1:'step_orientacoes',2:'step_doppler',3:'step_foto',4:'step_resultado',5:'step_dados',6:'step_agendamento'};
+  if(evtMap[n])track(evtMap[n]);
   if(n===3){
     const b=document.getElementById('dopBanner');
     if(dop==='pos'){b.className='al alr anim';b.innerHTML=`🔊 <span><strong>Doppler positivo</strong> — Refluxo venoso confirmado. Classificação mínima: Grau 7.</span>`}
@@ -820,6 +847,7 @@ async function saveLead(){
       body:JSON.stringify(payload)
     });
     if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.message||r.statusText);}
+    track('lead_completo',{grau:res?.score||0,doppler:dop||'no'});
     revealTx();goTo(4);
   }catch(e){
     console.error('Supabase erro:',e);
